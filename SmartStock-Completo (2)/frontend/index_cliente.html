@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartStock - Portal de Clientes | OneCard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            onecard: {
+              primary: '#4169E1',
+              secondary: '#0033A5',
+              accent: '#1665F0',
+              cyan: '#00A0FF',
+              dark1: '#232A34',
+              dark2: '#242B35',
+              dark3: '#23282D',
+              dark4: '#212529',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    .mono { font-family: 'SF Mono', 'Consolas', monospace; }
+    body { background: linear-gradient(135deg, #212529 0%, #232A34 50%, #242B35 100%); }
+    .glass { background: rgba(36, 43, 53, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(65, 105, 225, 0.15); }
+    .glass-dark { background: rgba(33, 37, 41, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(65, 105, 225, 0.2); }
+    .gradient-onecard { background: linear-gradient(135deg, #4169E1, #0033A5); }
+    .gradient-text-onecard { background: linear-gradient(135deg, #4169E1, #00A0FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(65, 105, 225, 0.15); }
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    .slide-up { animation: slideUp 0.5s ease-out; }
+    .slide-down { animation: slideDown 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 500px; } }
+    .loader { border: 3px solid rgba(65, 105, 225, 0.2); border-top-color: #4169E1; border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast-enter { animation: toastIn 0.4s ease-out; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+    
+    .input-onecard {
+      width: 100%;
+      background-color: #232A34 !important;
+      border: 2px solid #4169E1 !important;
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #FFFFFF !important;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    .input-onecard:hover { border-color: #00A0FF !important; }
+    .input-onecard:focus { border-color: #00A0FF !important; box-shadow: 0 0 0 4px rgba(0, 160, 255, 0.2); }
+    .input-onecard:disabled { opacity: 0.5; cursor: not-allowed; }
+    .input-onecard::placeholder { color: #6b7280; }
+    
+    .select-onecard {
+      width: 100%;
+      background-color: #232A34 !important;
+      border: 2px solid #4169E1 !important;
+      border-radius: 12px;
+      padding: 12px 48px 12px 16px;
+      color: #FFFFFF !important;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      outline: none;
+      cursor: pointer;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2300A0FF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 14px center !important;
+      background-size: 20px !important;
+    }
+    .select-onecard:hover { border-color: #00A0FF !important; }
+    .select-onecard:focus { border-color: #00A0FF !important; box-shadow: 0 0 0 4px rgba(0, 160, 255, 0.2); }
+    .select-onecard:disabled { opacity: 0.5; cursor: not-allowed; }
+    .select-onecard option { background-color: #232A34 !important; color: #FFFFFF !important; }
+    
+    .input-number-onecard {
+      width: 100%;
+      background-color: #232A34 !important;
+      border: 2px solid #4169E1 !important;
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #00A0FF !important;
+      font-size: 24px;
+      font-weight: 700;
+      font-family: 'SF Mono', 'Consolas', monospace;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    .input-number-onecard:hover { border-color: #00A0FF !important; }
+    .input-number-onecard:focus { border-color: #00A0FF !important; box-shadow: 0 0 0 4px rgba(0, 160, 255, 0.2); }
+    .input-number-onecard::-webkit-inner-spin-button, .input-number-onecard::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(65, 105, 225, 0.05); }
+    ::-webkit-scrollbar-thumb { background: rgba(65, 105, 225, 0.3); border-radius: 3px; }
+    
+    .btn-onecard { background: linear-gradient(135deg, #4169E1, #0033A5); transition: all 0.3s; }
+    .btn-onecard:hover:not(:disabled) { background: linear-gradient(135deg, #1665F0, #4169E1); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(65, 105, 225, 0.4); }
+    .btn-onecard:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body class="text-white min-h-screen">
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useEffect, createContext, useContext } = React;
+    const API = 'http://localhost:5000';
+
+    // ═══════════════════════════════════════════════════════════
+    // CONTEXTO - NOTIFICACIONES
+    // ═══════════════════════════════════════════════════════════
+    const ToastCtx = createContext();
+    const ToastProvider = ({ children }) => {
+      const [toasts, setToasts] = useState([]);
+      const add = (msg, type = 'success') => {
+        const id = Date.now();
+        setToasts(p => [...p, { id, msg, type }]);
+        setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 4000);
+      };
+      return (
+        <ToastCtx.Provider value={{ addToast: add }}>
+          {children}
+          <div className="fixed top-4 right-4 z-50 space-y-2">
+            {toasts.map(t => (
+              <div key={t.id} className={`toast-enter px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 ${t.type === 'success' ? 'bg-emerald-500' : t.type === 'error' ? 'bg-red-500' : t.type === 'warning' ? 'bg-amber-500' : 'bg-onecard-primary'}`}>
+                <span>{t.type === 'success' ? '✅' : t.type === 'error' ? '❌' : t.type === 'warning' ? '⚠️' : 'ℹ️'}</span>
+                <span className="font-medium">{t.msg}</span>
+              </div>
+            ))}
+          </div>
+        </ToastCtx.Provider>
+      );
+    };
+    const useToast = () => useContext(ToastCtx);
+
+    const api = {
+      get: async (url) => (await fetch(`${API}${url}`)).json(),
+      post: async (url, data) => (await fetch(`${API}${url}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })).json()
+    };
+
+    const Loading = () => <div className="flex justify-center py-20"><div className="loader"></div></div>;
+
+    // ═══════════════════════════════════════════════════════════
+    // CLIENTES DEMO
+    // ═══════════════════════════════════════════════════════════
+    const CLIENTES_DEMO = [
+      { user: 'laura', pass: '1234', cliente_id: 3, nombre: 'Lic. Laura Martínez', empresa: 'The Charles Schwab Corporation' },
+      { user: 'carlos', pass: '1234', cliente_id: 1, nombre: 'Carlos Rodríguez', empresa: 'TEGNA Inc.' },
+      { user: 'maria', pass: '1234', cliente_id: 12, nombre: 'María González', empresa: 'Whirlpool Corporation' },
+      { user: 'demo', pass: 'demo', cliente_id: 5, nombre: 'Usuario Demo', empresa: 'FS Investment Corporation' },
+    ];
+
+    // ═══════════════════════════════════════════════════════════
+    // LOGIN CLIENTE
+    // ═══════════════════════════════════════════════════════════
+    const Login = ({ onLogin }) => {
+      const [user, setUser] = useState('');
+      const [pass, setPass] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState('');
+
+      const handleLogin = () => {
+        setLoading(true);
+        setError('');
+        setTimeout(() => {
+          const cliente = CLIENTES_DEMO.find(c => c.user === user && c.pass === pass);
+          if (cliente) {
+            onLogin({ 
+              name: cliente.nombre, 
+              empresa: cliente.empresa, 
+              cliente_id: cliente.cliente_id,
+              role: 'cliente' 
+            });
+          } else { 
+            setError('Credenciales incorrectas'); 
+          }
+          setLoading(false);
+        }, 500);
+      };
+
+      return (
+        <div className="min-h-screen flex items-center justify-center p-4">
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-onecard-primary/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-onecard-cyan/10 rounded-full blur-3xl"></div>
+          </div>
+          <div className="glass rounded-3xl p-8 w-full max-w-md relative slide-up">
+            <div className="text-center mb-6">
+              <div className="w-20 h-20 rounded-2xl gradient-onecard flex items-center justify-center text-4xl mx-auto mb-4 shadow-xl">💳</div>
+              <h1 className="text-3xl font-bold gradient-text-onecard">SmartStock</h1>
+              <p className="text-gray-400 mt-1">Portal de Clientes</p>
+              <span className="inline-block mt-2 px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-medium">ACCESO CLIENTES</span>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-2 font-medium">Usuario</label>
+                <input 
+                  type="text" 
+                  value={user} 
+                  onChange={e => setUser(e.target.value)} 
+                  placeholder="Tu usuario"
+                  className="input-onecard" 
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2 font-medium">Contraseña</label>
+                <input 
+                  type="password" 
+                  value={pass} 
+                  onChange={e => setPass(e.target.value)} 
+                  placeholder="••••••••"
+                  className="input-onecard" 
+                  onKeyPress={e => e.key === 'Enter' && handleLogin()}
+                />
+              </div>
+              {error && <p className="text-red-400 text-sm text-center bg-red-500/10 rounded-lg py-2">{error}</p>}
+              <button onClick={handleLogin} disabled={loading} className="w-full py-3.5 rounded-xl font-semibold btn-onecard text-white text-base">
+                {loading ? 'Verificando...' : 'Ingresar'}
+              </button>
+              <div className="mt-4 pt-4 border-t border-onecard-primary/20">
+                <p className="text-xs text-gray-500 text-center mb-2">Usuarios de prueba:</p>
+                <div className="flex flex-wrap gap-2 justify-center text-xs">
+                  <span className="px-3 py-1.5 bg-onecard-dark4 rounded-lg text-onecard-cyan">laura / 1234</span>
+                  <span className="px-3 py-1.5 bg-onecard-dark4 rounded-lg text-onecard-cyan">carlos / 1234</span>
+                  <span className="px-3 py-1.5 bg-onecard-dark4 rounded-lg text-onecard-cyan">demo / demo</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ═══════════════════════════════════════════════════════════
+    // HEADER CLIENTE (Solo 2 opciones)
+    // ═══════════════════════════════════════════════════════════
+    const Header = ({ view, setView, user, onLogout, online }) => (
+      <header className="glass-dark sticky top-0 z-40 px-6 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl gradient-onecard flex items-center justify-center text-xl shadow-lg">💳</div>
+            <div>
+              <h1 className="font-bold gradient-text-onecard">SmartStock</h1>
+              <p className="text-xs text-gray-500">Portal de Clientes</p>
+            </div>
+          </div>
+          
+          <nav className="flex gap-2 bg-onecard-dark4 p-1.5 rounded-xl">
+            {[
+              ['inicio', '🏠', 'Inicio'], 
+              ['mis-pedidos', '📦', 'Mis Pedidos']
+            ].map(([id, icon, label]) => (
+              <button 
+                key={id} 
+                onClick={() => setView(id)} 
+                className={`px-5 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition ${view === id ? 'gradient-onecard text-white shadow-lg' : 'text-gray-400 hover:bg-onecard-dark3 hover:text-white'}`}
+              >
+                {icon} {label}
+              </button>
+            ))}
+          </nav>
+          
+          <div className="flex items-center gap-3">
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${online ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
+              <div className={`w-2 h-2 rounded-full ${online ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></div>
+              <span className={`text-xs ${online ? 'text-emerald-400' : 'text-red-400'}`}>{online ? 'Online' : 'Offline'}</span>
+            </div>
+            <div className="flex items-center gap-2 pl-3 border-l border-onecard-primary/30">
+              <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-sm">{user.name[0]}</div>
+              <div className="hidden md:block">
+                <span className="text-sm text-white block">{user.name}</span>
+                <span className="text-xs text-emerald-400">{user.empresa}</span>
+              </div>
+              <button onClick={onLogout} className="text-gray-400 hover:text-white transition" title="Cerrar sesión">🚪</button>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+
+    // ═══════════════════════════════════════════════════════════
+    // INICIO - Dashboard + Solicitar Pedido con CONCIENTIZACIÓN
+    // ═══════════════════════════════════════════════════════════
+    const Inicio = ({ user }) => {
+      const { addToast } = useToast();
+      const [contratos, setContratos] = useState([]);
+      const [productos, setProductos] = useState([]);
+      const [loading, setLoading] = useState(true);
+      
+      const [producto, setProducto] = useState('');
+      const [cantidad, setCantidad] = useState('');
+      const [contrato, setContrato] = useState(null);
+      const [result, setResult] = useState(null);
+      const [validando, setValidando] = useState(false);
+      
+      useEffect(() => {
+        Promise.all([
+          api.get(`/api/cliente/${user.cliente_id}/contratos`),
+          api.get('/api/productos')
+        ]).then(([c, p]) => {
+          setContratos(c.contratos || []);
+          setProductos(p.productos || []);
+          setLoading(false);
+        });
+      }, [user.cliente_id]);
+      
+      useEffect(() => { 
+        const c = producto ? contratos.find(c => c.producto_id == producto) : null;
+        setContrato(c);
+        setResult(null);
+        
+        // Mostrar alerta si tiene muchas inactivas
+        if (c && c.porcentaje_inactivas > 50) {
+          addToast(`Tienes ${c.porcentaje_inactivas}% de tarjetas sin usar`, 'warning');
+        }
+      }, [producto, contratos]);
+
+      const validar = async () => {
+        if (!producto || !cantidad) return;
+        setValidando(true);
+        const r = await api.post('/api/pedido/validar', { cliente_id: user.cliente_id, producto_id: +producto, cantidad: +cantidad });
+        setResult(r);
+        addToast(r.estado === 'aprobado' ? 'Validado' : r.estado === 'aprobado_parcial' ? 'Parcial' : 'Rechazado', r.estado === 'rechazado' ? 'error' : 'success');
+        setValidando(false);
+      };
+
+      const confirmar = async () => {
+        setValidando(true);
+        const r = await api.post('/api/pedido/confirmar', { cliente_id: user.cliente_id, producto_id: +producto, cantidad: result.cantidad_aprobada });
+        if (r.success) { 
+          setResult({ ...result, confirmado: true, tracking: r.pedido.tracking }); 
+          addToast(`¡Tracking: ${r.pedido.tracking}!`, 'success');
+          api.get(`/api/cliente/${user.cliente_id}/contratos`).then(c => setContratos(c.contratos || []));
+        }
+        setValidando(false);
+      };
+
+      const limpiar = () => { setProducto(''); setCantidad(''); setResult(null); setContrato(null); };
+      
+      if (loading) return <Loading />;
+      
+      const totalActuales = contratos.reduce((sum, c) => sum + (c.tarjetas_actuales || 0), 0);
+      const totalInactivas = contratos.reduce((sum, c) => sum + (c.tarjetas_inactivas || 0), 0);
+      const totalEnUso = totalActuales - totalInactivas;
+      const productosDisponibles = productos.filter(p => contratos.some(c => c.producto_id === p.id));
+      
+      return (
+        <div className="space-y-6 fade-in">
+          {/* Bienvenida */}
+          <div className="glass rounded-2xl p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-500 flex items-center justify-center text-3xl font-bold">{user.name[0]}</div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">¡Hola, {user.name.split(' ')[0]}!</h1>
+                <p className="text-gray-400">{user.empresa}</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* KPIs */}
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="glass rounded-2xl p-5 card-hover border-l-4 border-onecard-primary">
+              <div className="text-3xl mb-2">💳</div>
+              <p className="text-gray-400 text-sm">Tarjetas Totales</p>
+              <p className="text-3xl font-bold mono text-white">{totalActuales.toLocaleString()}</p>
+            </div>
+            <div className="glass rounded-2xl p-5 card-hover border-l-4 border-emerald-500">
+              <div className="text-3xl mb-2">✅</div>
+              <p className="text-gray-400 text-sm">En Uso</p>
+              <p className="text-3xl font-bold mono text-emerald-400">{totalEnUso.toLocaleString()}</p>
+            </div>
+            <div className="glass rounded-2xl p-5 card-hover border-l-4 border-amber-500">
+              <div className="text-3xl mb-2">📦</div>
+              <p className="text-gray-400 text-sm">Sin Usar</p>
+              <p className="text-3xl font-bold mono text-amber-400">{totalInactivas.toLocaleString()}</p>
+            </div>
+          </div>
+
+          {/* Grid: Contratos + Solicitar */}
+          <div className="grid lg:grid-cols-2 gap-6">
+            
+            {/* Mis Contratos */}
+            <div className="glass rounded-2xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <span>📄</span> Mis Contratos
+              </h2>
+              <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                {contratos.map((c, i) => (
+                  <div key={i} className="bg-onecard-dark4 rounded-xl p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="font-medium text-white">{c.producto_nombre}</p>
+                      <span className={`text-xs px-2 py-1 rounded ${c.porcentaje_inactivas > 50 ? 'bg-red-500/20 text-red-400' : c.porcentaje_inactivas > 30 ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                        {c.porcentaje_inactivas}% sin usar
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                      <div>
+                        <p className="text-gray-500">Límite</p>
+                        <p className="font-bold text-onecard-cyan mono">{c.limite_contrato?.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Tienes</p>
+                        <p className="font-bold text-white mono">{c.tarjetas_actuales?.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Puedes pedir</p>
+                        <p className="font-bold text-emerald-400 mono">{c.maximo_pedido?.toLocaleString()}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {contratos.length === 0 && (
+                  <p className="text-center text-gray-400 py-8">No tienes contratos activos</p>
+                )}
+              </div>
+            </div>
+            
+            {/* Solicitar Pedido con CONCIENTIZACIÓN */}
+            <div className="glass rounded-2xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <span>🛒</span> Solicitar Tarjetas
+              </h2>
+              
+              <div className="space-y-4">
+                {/* Selector de producto */}
+                <div>
+                  <label className="block text-sm text-gray-400 mb-2 font-medium">Tipo de Tarjeta</label>
+                  <select value={producto} onChange={e => setProducto(e.target.value)} className="select-onecard">
+                    <option value="">Seleccionar...</option>
+                    {productosDisponibles.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </select>
+                </div>
+
+                {/* ═══════════════════════════════════════════════════════════ */}
+                {/* ALERTAS DE CONCIENTIZACIÓN */}
+                {/* ═══════════════════════════════════════════════════════════ */}
+                
+                {/* Alerta CRÍTICA - más del 70% sin usar */}
+                {contrato && contrato.porcentaje_inactivas > 70 && (
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 slide-up">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">🛑</span>
+                      <div>
+                        <p className="font-semibold text-red-400">¡Stock Crítico Sin Usar!</p>
+                        <p className="text-sm text-gray-300 mt-1">
+                          Tienes <span className="text-red-400 font-bold">{contrato.tarjetas_inactivas?.toLocaleString()}</span> tarjetas 
+                          de <span className="text-white font-medium">{contrato.producto_nombre}</span> guardadas sin activar 
+                          (<span className="text-red-400 font-bold">{contrato.porcentaje_inactivas}%</span> de tu stock).
+                        </p>
+                        <p className="text-xs text-gray-400 mt-2 bg-red-500/10 rounded-lg p-2">
+                          🚫 Por política de optimización, tu máximo de pedido está limitado a <span className="text-emerald-400 font-bold">{contrato.maximo_pedido?.toLocaleString()}</span> tarjetas hasta que actives las existentes.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Alerta MODERADA - entre 30% y 70% sin usar */}
+                {contrato && contrato.porcentaje_inactivas > 30 && contrato.porcentaje_inactivas <= 70 && (
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 slide-up">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">⚠️</span>
+                      <div>
+                        <p className="font-semibold text-amber-400">¡Atención! Tienes tarjetas disponibles</p>
+                        <p className="text-sm text-gray-300 mt-1">
+                          Actualmente tienes <span className="text-amber-400 font-bold">{contrato.tarjetas_inactivas?.toLocaleString()}</span> tarjetas 
+                          de <span className="text-white font-medium">{contrato.producto_nombre}</span> sin activar 
+                          ({contrato.porcentaje_inactivas}% de tu stock).
+                        </p>
+                        <p className="text-xs text-gray-400 mt-2">
+                          💡 Te recomendamos activar las tarjetas existentes antes de solicitar más. Esto optimiza tu inversión.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ═══════════════════════════════════════════════════════════ */}
+                {/* RESUMEN VISUAL DEL STOCK ACTUAL */}
+                {/* ═══════════════════════════════════════════════════════════ */}
+                {contrato && (
+                  <div className="bg-onecard-dark4 rounded-xl p-4 slide-up">
+                    <p className="text-sm text-gray-400 mb-3 flex items-center gap-2">
+                      <span>📊</span> Tu stock actual de <span className="text-white font-medium">{contrato.producto_nombre}</span>:
+                    </p>
+                    <div className="grid grid-cols-3 gap-3 text-center">
+                      <div className="bg-onecard-dark3 rounded-lg p-3">
+                        <p className="text-xs text-gray-500">Tienes</p>
+                        <p className="text-xl font-bold text-white mono">{contrato.tarjetas_actuales?.toLocaleString()}</p>
+                      </div>
+                      <div className="bg-onecard-dark3 rounded-lg p-3">
+                        <p className="text-xs text-gray-500">Activas</p>
+                        <p className="text-xl font-bold text-emerald-400 mono">{(contrato.tarjetas_actuales - contrato.tarjetas_inactivas)?.toLocaleString()}</p>
+                      </div>
+                      <div className="bg-onecard-dark3 rounded-lg p-3">
+                        <p className="text-xs text-gray-500">Sin Usar</p>
+                        <p className={`text-xl font-bold mono ${contrato.porcentaje_inactivas > 50 ? 'text-red-400' : contrato.porcentaje_inactivas > 30 ? 'text-amber-400' : 'text-gray-400'}`}>
+                          {contrato.tarjetas_inactivas?.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Barra de progreso visual */}
+                    <div className="mt-4">
+                      <div className="flex justify-between text-xs text-gray-500 mb-1">
+                        <span>Uso de tarjetas</span>
+                        <span className={`font-medium ${contrato.porcentaje_inactivas > 50 ? 'text-red-400' : contrato.porcentaje_inactivas > 30 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                          {100 - contrato.porcentaje_inactivas}% en uso
+                        </span>
+                      </div>
+                      <div className="h-3 bg-onecard-dark3 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full transition-all duration-500 ${contrato.porcentaje_inactivas > 50 ? 'bg-gradient-to-r from-red-500 to-red-400' : contrato.porcentaje_inactivas > 30 ? 'bg-gradient-to-r from-amber-500 to-amber-400' : 'bg-gradient-to-r from-emerald-500 to-emerald-400'}`}
+                          style={{ width: `${100 - contrato.porcentaje_inactivas}%` }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    {/* Máximo que puede pedir */}
+                    <div className="mt-4 pt-3 border-t border-onecard-primary/20 flex justify-between items-center">
+                      <span className="text-gray-400 text-sm">Máximo que puedes pedir:</span>
+                      <span className="text-emerald-400 font-bold mono text-2xl">{contrato.maximo_pedido?.toLocaleString()}</span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Campo de cantidad */}
+                <div>
+                  <label className="block text-sm text-gray-400 mb-2 font-medium">Cantidad a solicitar</label>
+                  <input 
+                    type="number" 
+                    value={cantidad} 
+                    onChange={e => { setCantidad(e.target.value); setResult(null); }} 
+                    placeholder="Ej: 100"
+                    disabled={!producto}
+                    className="input-number-onecard" 
+                  />
+                  {contrato && cantidad && +cantidad > contrato.maximo_pedido && (
+                    <p className="text-red-400 text-xs mt-2">⚠️ La cantidad excede tu máximo permitido ({contrato.maximo_pedido?.toLocaleString()})</p>
+                  )}
+                </div>
+                
+                <button onClick={validar} disabled={!producto || !cantidad || validando} className="w-full py-3 rounded-xl font-semibold btn-onecard text-white">
+                  {validando ? 'Verificando...' : '✓ Verificar Disponibilidad'}
+                </button>
+              </div>
+              
+              {/* Resultado de validación */}
+              {result && (
+                <div className={`mt-4 p-4 rounded-xl slide-up ${result.estado === 'aprobado' ? 'bg-emerald-500/10 border border-emerald-500/30' : result.estado === 'aprobado_parcial' ? 'bg-amber-500/10 border border-amber-500/30' : 'bg-red-500/10 border border-red-500/30'}`}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">{result.confirmado ? '🎉' : result.estado === 'aprobado' ? '✅' : result.estado === 'aprobado_parcial' ? '⚠️' : '❌'}</span>
+                    <div>
+                      <p className={`font-bold ${result.estado === 'aprobado' ? 'text-emerald-400' : result.estado === 'aprobado_parcial' ? 'text-amber-400' : 'text-red-400'}`}>
+                        {result.confirmado ? '¡Pedido Enviado!' : result.estado === 'aprobado' ? 'Disponible' : result.estado === 'aprobado_parcial' ? 'Aprobado Parcialmente' : 'No Disponible'}
+                      </p>
+                      <p className="text-xs text-gray-400">{result.mensaje}</p>
+                    </div>
+                  </div>
+                  
+                  {result.confirmado ? (
+                    <div className="bg-onecard-dark4 rounded-lg p-3 mb-3">
+                      <p className="text-xs text-gray-400">Tu número de tracking:</p>
+                      <p className="text-xl font-bold text-onecard-cyan mono">{result.tracking}</p>
+                    </div>
+                  ) : null}
+                  
+                  <div className="flex gap-2">
+                    {!result.confirmado && result.cantidad_aprobada > 0 && (
+                      <button onClick={confirmar} disabled={validando} className="flex-1 py-2 rounded-lg font-medium bg-emerald-500 hover:bg-emerald-600 text-white transition">
+                        {validando ? '...' : `Confirmar (${result.cantidad_aprobada?.toLocaleString()})`}
+                      </button>
+                    )}
+                    <button onClick={limpiar} className="flex-1 py-2 rounded-lg font-medium bg-onecard-dark3 hover:bg-onecard-dark4 text-white transition">
+                      {result.confirmado ? 'Nuevo Pedido' : 'Cancelar'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Consejo general si tiene muchas sin usar */}
+          {totalInactivas > totalActuales * 0.3 && (
+            <div className="glass rounded-xl p-4 border-l-4 border-amber-500 flex items-center gap-3">
+              <span className="text-2xl">💡</span>
+              <div>
+                <p className="font-semibold text-amber-400">Consejo para optimizar tu inversión</p>
+                <p className="text-sm text-gray-300">
+                  Tienes <span className="text-amber-400 font-bold">{Math.round(totalInactivas/totalActuales*100)}%</span> de tus tarjetas sin usar en total. 
+                  Actívalas para desbloquear mayor capacidad de pedido y aprovechar mejor tu presupuesto.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // ═══════════════════════════════════════════════════════════
+    // MIS PEDIDOS - Con Tracking Integrado y Botón Actualizar
+    // ═══════════════════════════════════════════════════════════
+    const MisPedidos = ({ user }) => {
+      const { addToast } = useToast();
+      const [pedidos, setPedidos] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [refreshing, setRefreshing] = useState(false);
+      const [trackingAbierto, setTrackingAbierto] = useState(null);
+      const [trackingData, setTrackingData] = useState({});
+      const [loadingTracking, setLoadingTracking] = useState(false);
+      
+      const estados = ['solicitado', 'aprobado', 'en_preparacion', 'en_camino', 'entregado'];
+      const icons = { solicitado: '📝', aprobado: '✅', en_preparacion: '📦', en_camino: '🚚', entregado: '🎉' };
+      const labels = { solicitado: 'Solicitado', aprobado: 'Aprobado', en_preparacion: 'En Preparación', en_camino: 'En Camino', entregado: 'Entregado' };
+      
+      const cargarPedidos = (showToast = false) => {
+        if (showToast) setRefreshing(true);
+        api.get('/api/pedidos/historial').then(d => {
+          const misPedidos = (d.pedidos || []).filter(p => p.cliente_id === user.cliente_id);
+          setPedidos(misPedidos);
+          setTrackingData({}); // Limpiar cache de tracking para que se recargue con datos frescos
+          setLoading(false);
+          setRefreshing(false);
+          if (showToast) addToast('Pedidos actualizados', 'success');
+        }).catch(() => {
+          setLoading(false);
+          setRefreshing(false);
+          if (showToast) addToast('Error al actualizar', 'error');
+        });
+      };
+      
+      useEffect(() => {
+        cargarPedidos(false);
+      }, [user.cliente_id]);
+      
+      const toggleTracking = async (pedido) => {
+        if (trackingAbierto === pedido.id) {
+          setTrackingAbierto(null);
+          return;
+        }
+        
+        setTrackingAbierto(pedido.id);
+        
+        if (trackingData[pedido.tracking]) return;
+        
+        setLoadingTracking(true);
+        try {
+          const r = await api.get(`/api/pedido/tracking/${pedido.tracking}`);
+          if (!r.error) {
+            setTrackingData(prev => ({ ...prev, [pedido.tracking]: r }));
+          }
+        } catch (e) {
+          console.error(e);
+        }
+        setLoadingTracking(false);
+      };
+      
+      if (loading) return <Loading />;
+      
+      return (
+        <div className="space-y-6 fade-in">
+          {/* HEADER CON BOTÓN ACTUALIZAR */}
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-white">📦 Mis Pedidos</h1>
+              <p className="text-gray-400 text-sm">{pedidos.length} pedidos realizados</p>
+            </div>
+            <button 
+              onClick={() => cargarPedidos(true)} 
+              disabled={refreshing}
+              className="px-4 py-2.5 bg-onecard-dark3 rounded-xl hover:bg-onecard-dark4 transition font-medium text-white flex items-center gap-2 border border-onecard-primary/30 hover:border-onecard-cyan/50"
+            >
+              <span className={refreshing ? 'animate-spin' : ''}>🔄</span> 
+              {refreshing ? 'Actualizando...' : 'Actualizar'}
+            </button>
+          </div>
+          
+          {pedidos.length === 0 ? (
+            <div className="glass rounded-2xl p-12 text-center">
+              <span className="text-6xl block mb-4">📦</span>
+              <p className="text-gray-300 text-xl mb-2">Aún no has realizado pedidos</p>
+              <p className="text-gray-500">Tus pedidos aparecerán aquí cuando los solicites</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {pedidos.map(p => {
+                const isOpen = trackingAbierto === p.id;
+                const tracking = trackingData[p.tracking];
+                
+                return (
+                  <div key={p.id} className="glass rounded-2xl overflow-hidden">
+                    <div className="p-5">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${p.estado_envio === 'entregado' ? 'bg-emerald-500/20' : 'bg-onecard-primary/20'}`}>
+                            {icons[p.estado_envio]}
+                          </div>
+                          <div>
+                            <p className="font-bold text-white">{p.producto_nombre}</p>
+                            <p className="text-sm text-gray-400">{p.fecha}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-bold mono text-white">{p.cantidad_aprobada?.toLocaleString()}</p>
+                          <p className="text-xs text-gray-500">tarjetas</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="px-3 py-1.5 bg-onecard-dark4 rounded-lg mono text-onecard-cyan text-sm font-medium">{p.tracking}</span>
+                          <span className={`px-3 py-1.5 rounded-lg text-sm font-medium ${p.estado_envio === 'entregado' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                            {icons[p.estado_envio]} {labels[p.estado_envio]}
+                          </span>
+                        </div>
+                        
+                        <button 
+                          onClick={() => toggleTracking(p)} 
+                          className={`px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 ${isOpen ? 'bg-onecard-primary text-white' : 'bg-onecard-dark4 text-gray-300 hover:bg-onecard-dark3'}`}
+                        >
+                          🚚 {isOpen ? 'Ocultar' : 'Rastrear'}
+                          <span className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}>▼</span>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {isOpen && (
+                      <div className="border-t border-onecard-primary/20 bg-onecard-dark4/50 p-5 slide-down">
+                        {loadingTracking && !tracking ? (
+                          <div className="flex justify-center py-6">
+                            <div className="loader" style={{width: '30px', height: '30px'}}></div>
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            <div>
+                              <div className="flex justify-between items-center mb-2">
+                                <p className="text-sm text-gray-400">Progreso del envío</p>
+                                <p className="text-onecard-cyan font-medium">{Math.round((estados.indexOf(p.estado_envio) + 1) / estados.length * 100)}%</p>
+                              </div>
+                              <div className="h-3 bg-onecard-dark3 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-onecard-primary to-emerald-500 rounded-full transition-all duration-500" 
+                                  style={{ width: `${(estados.indexOf(p.estado_envio) + 1) / estados.length * 100}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-5 gap-2">
+                              {estados.map((e, i) => {
+                                const done = estados.indexOf(p.estado_envio) >= i;
+                                const current = p.estado_envio === e;
+                                return (
+                                  <div key={e} className={`text-center ${done ? '' : 'opacity-40'}`}>
+                                    <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center text-lg mb-1 transition-all ${current ? 'bg-onecard-primary ring-4 ring-onecard-primary/30 scale-110' : done ? 'bg-emerald-500' : 'bg-onecard-dark3'}`}>
+                                      {icons[e]}
+                                    </div>
+                                    <p className={`text-xs ${current ? 'text-onecard-cyan font-bold' : done ? 'text-gray-300' : 'text-gray-500'}`}>
+                                      {labels[e].split(' ')[0]}
+                                    </p>
+                                    {done && <span className="text-emerald-400 text-xs">✓</span>}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            
+                            {/* Ubicación basada en el estado actual */}
+                            <div className="bg-onecard-dark3 rounded-xl p-3 flex items-center gap-3">
+                              <span className="text-2xl">📍</span>
+                              <div>
+                                <p className="text-xs text-gray-400">Ubicación actual</p>
+                                <p className="text-white font-medium">
+                                  {tracking?.ubicacion || 
+                                    (p.estado_envio === 'solicitado' ? 'Recibido en sistema' :
+                                     p.estado_envio === 'aprobado' ? 'En proceso de validación' :
+                                     p.estado_envio === 'en_preparacion' ? 'Almacén Central - Área de Empaque' :
+                                     p.estado_envio === 'en_camino' ? 'En ruta de entrega' :
+                                     'Entregado al cliente')}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // ═══════════════════════════════════════════════════════════
+    // APP CLIENTE
+    // ═══════════════════════════════════════════════════════════
+    const App = () => {
+      const [user, setUser] = useState(null);
+      const [view, setView] = useState('inicio');
+      const [online, setOnline] = useState(false);
+      
+      useEffect(() => { 
+        const check = () => api.get('/api/health').then(() => setOnline(true)).catch(() => setOnline(false)); 
+        check(); const i = setInterval(check, 30000); return () => clearInterval(i); 
+      }, []);
+      
+      if (!user) return <Login onLogin={setUser} />;
+      
+      return (
+        <ToastProvider>
+          <div className="min-h-screen">
+            <Header view={view} setView={setView} user={user} onLogout={() => setUser(null)} online={online} />
+            <main className="max-w-6xl mx-auto px-4 py-6">
+              {view === 'inicio' && <Inicio user={user} />}
+              {view === 'mis-pedidos' && <MisPedidos user={user} />}
+            </main>
+            <footer className="text-center py-6 text-gray-500 text-sm border-t border-onecard-primary/20">
+              SmartStock v2.2 — Portal de Clientes — <span className="text-onecard-cyan">OneCard</span>
+            </footer>
+          </div>
+        </ToastProvider>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

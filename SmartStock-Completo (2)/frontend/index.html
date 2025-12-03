@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartStock - OneCard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            onecard: {
+              primary: '#4169E1',
+              secondary: '#0033A5',
+              accent: '#1665F0',
+              cyan: '#00A0FF',
+              dark1: '#232A34',
+              dark2: '#242B35',
+              dark3: '#23282D',
+              dark4: '#212529',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: linear-gradient(135deg, #212529 0%, #232A34 50%, #242B35 100%); min-height: 100vh; }
+    .glass { background: rgba(36, 43, 53, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(65, 105, 225, 0.15); }
+    .gradient-onecard { background: linear-gradient(135deg, #4169E1, #0033A5); }
+    .gradient-text-onecard { background: linear-gradient(135deg, #4169E1, #00A0FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .card-hover:hover { transform: translateY(-8px); box-shadow: 0 25px 50px rgba(65, 105, 225, 0.25); }
+    .fade-in { animation: fadeIn 0.6s ease-out; }
+    .slide-up { animation: slideUp 0.8s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(65, 105, 225, 0.3); } 50% { box-shadow: 0 0 40px rgba(65, 105, 225, 0.6); } }
+  </style>
+</head>
+<body class="text-white flex items-center justify-center p-6">
+  
+  <!-- Efectos de fondo -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-onecard-primary/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-onecard-cyan/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-onecard-secondary/5 rounded-full blur-3xl"></div>
+  </div>
+  
+  <div class="relative z-10 max-w-4xl w-full">
+    
+    <!-- Logo y Título -->
+    <div class="text-center mb-12 slide-up">
+      <div class="w-24 h-24 rounded-3xl gradient-onecard flex items-center justify-center text-5xl mx-auto mb-6 shadow-2xl pulse-glow">
+        💳
+      </div>
+      <h1 class="text-5xl font-extrabold gradient-text-onecard mb-3">SmartStock</h1>
+      <p class="text-xl text-gray-400">Sistema de Control Inteligente de Incentivos</p>
+      <div class="flex items-center justify-center gap-2 mt-4">
+        <div class="w-2 h-2 rounded-full bg-onecard-cyan animate-pulse"></div>
+        <span class="text-onecard-cyan text-sm font-medium">Hackathon OneCard 2024</span>
+      </div>
+    </div>
+    
+    <!-- Cards de Selección -->
+    <div class="grid md:grid-cols-2 gap-6 fade-in" style="animation-delay: 0.3s;">
+      
+      <!-- Card Admin -->
+      <a href="index_admin.html" class="glass rounded-3xl p-8 card-hover block group cursor-pointer border-2 border-transparent hover:border-onecard-primary/50">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 rounded-2xl gradient-onecard flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform">
+            🔐
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-white">Administrador</h2>
+            <p class="text-onecard-cyan text-sm">Panel de Control</p>
+          </div>
+        </div>
+        
+        <p class="text-gray-400 mb-6">Acceso completo al sistema: dashboard, pedidos, tracking, contratos e inventario.</p>
+        
+        <div class="space-y-2 mb-6">
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <span class="text-onecard-cyan">✓</span> Dashboard con KPIs y gráficas
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <span class="text-onecard-cyan">✓</span> Gestión de pedidos para todos los clientes
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <span class="text-onecard-cyan">✓</span> Centro de operaciones (tracking)
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <span class="text-onecard-cyan">✓</span> Control de contratos e inventario
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="text-xs text-gray-500">
+            <span class="text-onecard-cyan">roberto</span> / 1234 · <span class="text-onecard-cyan">admin</span> / admin
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-onecard-primary/20 flex items-center justify-center text-onecard-cyan group-hover:bg-onecard-primary group-hover:text-white transition-colors">
+            →
+          </div>
+        </div>
+      </a>
+      
+      <!-- Card Cliente -->
+      <a href="index_cliente.html" class="glass rounded-3xl p-8 card-hover block group cursor-pointer border-2 border-transparent hover:border-emerald-500/50">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform">
+            👤
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-white">Cliente</h2>
+            <p class="text-emerald-400 text-sm">Portal de Autoservicio</p>
+          </div>
+        </div>
+        
+        <p class="text-gray-400 mb-6">Solicita tarjetas, consulta tu historial y rastrea tus pedidos fácilmente.</p>
+        
+        <div class="space-y-2 mb-6">
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <span class="text-emerald-400">✓</span> Ver mis contratos y límites
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <span class="text-emerald-400">✓</span> Solicitar tarjetas (con Regla de Oro)
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <span class="text-emerald-400">✓</span> Historial de mis pedidos
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <span class="text-emerald-400">✓</span> Rastrear envíos
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="text-xs text-gray-500">
+            <span class="text-emerald-400">laura</span> / 1234 · <span class="text-emerald-400">carlos</span> / 1234 · <span class="text-emerald-400">demo</span> / demo
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+            →
+          </div>
+        </div>
+      </a>
+      
+    </div>
+    
+    <!-- Footer -->
+    <div class="text-center mt-12 text-gray-500 text-sm fade-in" style="animation-delay: 0.6s;">
+      <p>SmartStock v2.1 — Hackathon 2024 — <span class="text-onecard-cyan">OneCard</span></p>
+      <p class="mt-2 text-xs">Desarrollado con 💙 por el Equipo SmartStock</p>
+    </div>
+    
+  </div>
+  
+</body>
+</html>
